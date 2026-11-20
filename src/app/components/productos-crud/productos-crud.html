@@ -1,0 +1,116 @@
+<main class="contenedor">
+  <header>
+    <h1>Gestión de productos</h1>
+    <p class="subtitulo">CRUD con Angular y Cloud Firestore</p>
+  </header>
+
+  @if (mensaje(); as m) {
+    <div class="mensaje" [class.mensaje-error]="m.tipo === 'error'" role="status">
+      {{ m.texto }}
+      <button type="button" class="cerrar" (click)="mensaje.set(null)" aria-label="Cerrar mensaje">×</button>
+    </div>
+  }
+
+  <!-- FORMULARIO: crear y editar -->
+  <section class="tarjeta">
+    <h2>{{ editandoId() ? 'Editar producto' : 'Nuevo producto' }}</h2>
+
+    <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+      <div class="campos">
+        <label>
+          Nombre
+          <input type="text" formControlName="nombre" placeholder="Ej. Teclado" />
+          @if (campoInvalido('nombre')) {
+            <span class="error">El nombre es obligatorio.</span>
+          }
+        </label>
+
+        <label>
+          Precio
+          <input type="number" formControlName="precio" step="0.01" placeholder="0.00" />
+          @if (campoInvalido('precio')) {
+            <span class="error">
+              @if (formulario.controls.precio.hasError('min')) {
+                El precio debe ser mayor o igual a 0.
+              } @else {
+                El precio es obligatorio y debe ser numérico.
+              }
+            </span>
+          }
+        </label>
+
+        <label>
+          Stock
+          <input type="number" formControlName="stock" step="1" placeholder="0" />
+          @if (campoInvalido('stock')) {
+            <span class="error">
+              @if (formulario.controls.stock.hasError('min')) {
+                El stock debe ser mayor o igual a 0.
+              } @else if (formulario.controls.stock.hasError('noEntero')) {
+                El stock debe ser un número entero.
+              } @else {
+                El stock es obligatorio.
+              }
+            </span>
+          }
+        </label>
+
+        <label>
+          Categoría
+          <input type="text" formControlName="categoria" placeholder="Ej. Tecnología" />
+          @if (campoInvalido('categoria')) {
+            <span class="error">La categoría es obligatoria.</span>
+          }
+        </label>
+      </div>
+
+      <div class="acciones">
+        <button type="submit" class="boton boton-principal" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : (editandoId() ? 'Guardar cambios' : 'Agregar producto') }}
+        </button>
+        @if (editandoId()) {
+          <button type="button" class="boton" (click)="limpiarFormulario()">Cancelar edición</button>
+        }
+      </div>
+    </form>
+  </section>
+
+  <!-- TABLA: consultar, editar y eliminar -->
+  <section class="tarjeta">
+    <h2>Productos registrados</h2>
+
+    @if (cargando()) {
+      <p class="vacio">Cargando productos…</p>
+    } @else if (productos().length === 0) {
+      <p class="vacio">No hay productos registrados en la colección.</p>
+    } @else {
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Categoría</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of productos(); track p.id) {
+              <tr [class.fila-editando]="p.id === editandoId()">
+                <td>{{ p.nombre }}</td>
+                <td>{{ p.precio | currency: 'USD' }}</td>
+                <td>{{ p.stock }}</td>
+                <td>{{ p.categoria }}</td>
+                <td class="celda-acciones">
+                  <button type="button" class="boton boton-chico" (click)="editar(p)">Editar</button>
+                  <button type="button" class="boton boton-chico boton-peligro" (click)="eliminar(p)">Eliminar</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</main>

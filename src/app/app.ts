@@ -1,12 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ProductosCrud } from './components/productos-crud/productos-crud';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ProductosCrud],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
-export class App {
-  protected readonly title = signal('producto');
-}
+export class App {}

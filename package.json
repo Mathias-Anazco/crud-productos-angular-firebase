@@ -2,6 +2,10 @@
   "name": "producto",
   "version": "0.0.0",
   "scripts": {
+    "set-env": "node scripts/set-env.mjs",
+    "prestart": "npm run set-env",
+    "prebuild": "npm run set-env",
+    "pretest": "npm run set-env",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
@@ -17,6 +21,7 @@
     "@angular/forms": "^22.2.0",
     "@angular/platform-browser": "^22.2.0",
     "@angular/router": "^22.2.0",
+    "firebase": "^13.4.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
